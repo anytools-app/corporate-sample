@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getNewsDetail } from '@/app/_libs/microcms';
+import { getNewsDetail, client } from '@/app/_libs/microcms';
 import Article from '@/app/_components/Article';
 import styles from './page.module.css';
 import ButtonLink from '@/app/_components/ButtonLink';
@@ -8,38 +8,50 @@ type Props = {
   params: Promise<{
     slug: string;
   }>;
-  searchParams: Promise<{
-    dk: string;
-  }>;
 };
 
-export async function generateMetadata(props: Props): Promise<Metadata> {
-  const searchParams = await props.searchParams;
-  const params = await props.params;
-  const data = await getNewsDetail(params.slug, {
-    draftKey: searchParams.dk,
-  });
+export const dynamicParams = false;
 
-  return {
-    title: data.title,
-    description: data.description,
-    openGraph: {
+// まず静的パスを宣言
+export async function generateStaticParams() {
+  try {
+    const list = await client.getList<{ id: string }>({
+      endpoint: 'news',
+      queries: { limit: 100, fields: 'id' },
+    });
+    return list.contents.map((item) => ({ slug: item.id }));
+  } catch (e) {
+    console.error(e);
+    // microCMS 未設定などの場合は空配列を返してビルドを継続
+    return [] as { slug: string }[];
+  }
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
+  try {
+    const data = await getNewsDetail(params.slug);
+
+    return {
       title: data.title,
       description: data.description,
-      images: [data?.thumbnail?.url || ''],
-    },
-    alternates: {
-      canonical: `/news/${params.slug}`,
-    },
-  };
+      openGraph: {
+        title: data.title,
+        description: data.description,
+        images: [data?.thumbnail?.url || ''],
+      },
+      alternates: {
+        canonical: `/news/${params.slug}`,
+      },
+    };
+  } catch (_) {
+    return {} as Metadata;
+  }
 }
 
 export default async function Page(props: Props) {
-  const searchParams = await props.searchParams;
   const params = await props.params;
-  const data = await getNewsDetail(params.slug, {
-    draftKey: searchParams.dk,
-  });
+  const data = await getNewsDetail(params.slug);
   return (
     <>
       <Article data={data} />
@@ -49,3 +61,5 @@ export default async function Page(props: Props) {
     </>
   );
 }
+
+// generateStaticParams はファイル上部に移動済み

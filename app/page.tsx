@@ -5,10 +5,19 @@ import NewsList from '@/app/_components/NewsList';
 import styles from './page.module.css';
 import ButtonLink from '@/app/_components/ButtonLink';
 
+// 静的出力に固定
+export const dynamic = 'force-static';
+
 export default async function Page() {
-  const data = await getNewsList({
-    limit: TOP_NEWS_LIMIT,
-  });
+  // microCMS が未設定でもビルドできるようフォールバック
+  let data: { contents: any[] };
+  try {
+    data = await getNewsList({
+      limit: TOP_NEWS_LIMIT,
+    }) as any;
+  } catch (_) {
+    data = { contents: [] };
+  }
   return (
     <>
       <section className={styles.top}>

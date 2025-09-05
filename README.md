@@ -57,6 +57,26 @@ npm run dev
 3. 開発環境へのアクセス  
    [http://localhost:3000](http://localhost:3000)にアクセス
 
+## 静的出力（Static Export）
+
+本プロジェクトは静的出力に対応しています。
+
+1. ビルド
+
+```bash
+npm run build
+```
+
+2. 静的出力
+
+```bash
+npm run export
+```
+
+`out/` ディレクトリに静的ファイルが生成されます。任意の静的ホスティングにデプロイできます。
+
+注意: `next/image` の最適化は無効化され、API ルート（`/api/submit-contact`）やミドルウェアは静的出力では利用できません。
+
 ## 解説ドキュメント
 
 - [コンテンツ管理](https://github.com/microcmsio/nextjs-simple-corporate-site-template/blob/main/docs/content-management.md)

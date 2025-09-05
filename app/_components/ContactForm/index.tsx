@@ -12,23 +12,27 @@ export default function ContactForm() {
   const [error, setError] = useState<string>();
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const res = await fetch('/api/submit-contact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        lastname: lastnameRef.current?.value,
-        firstname: firstnameRef.current?.value,
-        company: companyRef.current?.value,
-        email: emailRef.current?.value,
-        message: messageRef.current?.value,
-      }),
-    }).then((res) => res.json());
-    if (res.status === 'error') {
-      setError(res.message);
-    } else {
-      setSuccess(true);
+    try {
+      const res = await fetch('/api/submit-contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lastname: lastnameRef.current?.value,
+          firstname: firstnameRef.current?.value,
+          company: companyRef.current?.value,
+          email: emailRef.current?.value,
+          message: messageRef.current?.value,
+        }),
+      }).then((res) => res.json());
+      if (res.status === 'error') {
+        setError(res.message);
+      } else {
+        setSuccess(true);
+      }
+    } catch (err) {
+      setError('現在このフォームはご利用いただけません。');
     }
   };
   if (success) {

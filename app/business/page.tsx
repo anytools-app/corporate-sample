@@ -3,17 +3,17 @@ import { getBusinessList } from '@/app/_libs/microcms';
 import styles from './page.module.css';
 import ButtonLink from '@/app/_components/ButtonLink';
 
-type Props = {
-  searchParams: Promise<{
-    dk: string;
-  }>;
-};
+// 静的出力に固定
+export const dynamic = 'force-static';
 
-export default async function Page(props: Props) {
-  const searchParams = await props.searchParams;
-  const data = await getBusinessList({
-    draftKey: searchParams.dk,
-  });
+export default async function Page() {
+  // microCMS 未設定時のフォールバック
+  let data: { contents: any[] };
+  try {
+    data = (await getBusinessList()) as any;
+  } catch (_) {
+    data = { contents: [] };
+  }
   return (
     <div className={styles.container}>
       {data.contents.length === 0 ? (

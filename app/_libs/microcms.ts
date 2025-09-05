@@ -50,24 +50,38 @@ export type Meta = {
 
 export type Article = News & MicroCMSContentId & MicroCMSDate;
 
-if (!process.env.MICROCMS_SERVICE_DOMAIN) {
-  throw new Error('MICROCMS_SERVICE_DOMAIN is required');
-}
+// Initialize Client SDK (env 未設定でもビルドが落ちないよう安全化)
+const hasMicrocmsEnv = Boolean(process.env.MICROCMS_SERVICE_DOMAIN && process.env.MICROCMS_API_KEY);
 
-if (!process.env.MICROCMS_API_KEY) {
-  throw new Error('MICROCMS_API_KEY is required');
-}
+type MicrocmsClient = {
+  getList: <T>(args: any) => Promise<{
+    contents: T[];
+    totalCount: number;
+    offset: number;
+    limit: number;
+  }>;
+  getListDetail: <T>(args: any) => Promise<T>;
+  getObject: <T>(args: any) => Promise<T | null>;
+};
 
-// Initialize Client SDK.
-export const client = createClient({
-  serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN,
-  apiKey: process.env.MICROCMS_API_KEY,
-});
+export const client: MicrocmsClient = hasMicrocmsEnv
+  ? (createClient({
+      serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN as string,
+      apiKey: process.env.MICROCMS_API_KEY as string,
+    }) as unknown as MicrocmsClient)
+  : {
+      getList: async () => ({ contents: [], totalCount: 0, offset: 0, limit: 0 }),
+      getListDetail: async () => {
+        // Next.js の notFound で処理させるため、呼び出し側で catch(notFound) される想定
+        throw new Error('microCMS client is not configured');
+      },
+      getObject: async () => null,
+    };
 
 // ニュース一覧を取得
 export const getNewsList = async (queries?: MicroCMSQueries) => {
   const listData = await client
-    .getList<News>({
+    .getList<Article>({
       endpoint: 'news',
       queries,
     })
@@ -78,7 +92,7 @@ export const getNewsList = async (queries?: MicroCMSQueries) => {
 // ニュースの詳細を取得
 export const getNewsDetail = async (contentId: string, queries?: MicroCMSQueries) => {
   const detailData = await client
-    .getListDetail<News>({
+    .getListDetail<Article>({
       endpoint: 'news',
       contentId,
       queries,

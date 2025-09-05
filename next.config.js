@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 静的出力を有効化
+  output: 'export',
   images: {
+    // next export 互換のため最適化を無効化（生の<img>を出力）
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
