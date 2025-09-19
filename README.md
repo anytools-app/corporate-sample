@@ -21,17 +21,17 @@ HUBSPOT_PORTAL_ID=xxxxxxxx
 HUBSPOT_FORM_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-`MICROCMS_API_KEY`  
+`MICROCMS_API_KEY`
 microCMS 管理画面の「サービス設定 > API キー」から確認することができます。
 
-`MICROCMS_SERVICE_DOMAIN`  
+`MICROCMS_SERVICE_DOMAIN`
 microCMS 管理画面の URL（https://xxxxxxxx.microcms.io）の xxxxxxxx の部分です。
 
 `BASE_URL`
 デプロイ先の URL です。プロトコルから記載してください。
 
-例）  
-開発環境 → http://localhost:3000  
+例）
+開発環境 → http://localhost:3000
 本番環境 → https://xxxxxxxx.vercel.app/ など
 
 `HUBSPOT_PORTAL_ID`
@@ -54,7 +54,7 @@ npm install
 npm run dev
 ```
 
-3. 開発環境へのアクセス  
+3. 開発環境へのアクセス
    [http://localhost:3000](http://localhost:3000)にアクセス
 
 ## 静的出力（Static Export）
@@ -75,7 +75,7 @@ npm run export
 
 `out/` ディレクトリに静的ファイルが生成されます。任意の静的ホスティングにデプロイできます。
 
-注意: `next/image` の最適化は無効化され、API ルート（`/api/submit-contact`）やミドルウェアは静的出力では利用できません。
+注意: `next/image` の最適化は無効化され、API ルート（`/api/submit-contact`）やミドルウェアは静的出力では利用できませんよ。
 
 ## 解説ドキュメント
 
