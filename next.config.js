@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Export each route as /path/index.html so the public URL can drop the .html suffix
+  trailingSlash: true,
   // 静的出力を有効化
   output: 'export',
   images: {
